@@ -11,7 +11,6 @@ public class EmployeePayrollModel {
         this.name = name;
         this.salary = salary;
     }
-
     public int getId() {
         return id;
     }
@@ -22,5 +21,13 @@ public class EmployeePayrollModel {
 
     public long getSalary() {
         return salary;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSalary(long salary) {
+        this.salary = salary;
     }
 }
