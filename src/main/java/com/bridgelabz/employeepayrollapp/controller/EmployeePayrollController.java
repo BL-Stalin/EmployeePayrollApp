@@ -2,28 +2,26 @@ package com.bridgelabz.employeepayrollapp.controller;
 
 import com.bridgelabz.employeepayrollapp.dto.EmployeePayrollDTO;
 import com.bridgelabz.employeepayrollapp.model.EmployeePayrollModel;
+import com.bridgelabz.employeepayrollapp.service.EmployeePayrollService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/employees")
 public class EmployeePayrollController {
 
-    private List<EmployeePayrollModel> employeeList = new ArrayList<>();
-    private int empIdCounter = 1;
+    @Autowired
+    private EmployeePayrollService employeePayrollService;
 
     @PostMapping
     public EmployeePayrollModel addEmployee(@RequestBody EmployeePayrollDTO employeeDTO) {
-        EmployeePayrollModel employee =
-                new EmployeePayrollModel(empIdCounter++, employeeDTO.getName(), employeeDTO.getSalary());
-        employeeList.add(employee);
-        return employee;
+        return employeePayrollService.addEmployee(employeeDTO);
     }
 
     @GetMapping
     public List<EmployeePayrollModel> getEmployees() {
-        return employeeList;
+        return employeePayrollService.getAllEmployees();
     }
 }
