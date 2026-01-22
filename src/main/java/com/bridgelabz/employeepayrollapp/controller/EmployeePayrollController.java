@@ -6,6 +6,7 @@ import com.bridgelabz.employeepayrollapp.service.EmployeePayrollService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,12 +20,13 @@ public class EmployeePayrollController {
 
     // ---- UC1-POST ----
     @PostMapping
-    public EmployeePayrollModel addEmployee(@RequestBody EmployeePayrollDTO employeeDTO) {
+    public EmployeePayrollModel addEmployee(
+            @Valid @RequestBody EmployeePayrollDTO employeeDTO) {
         log.info("Adding employee with name: {}", employeeDTO.getName());
         return employeePayrollService.addEmployee(employeeDTO);
     }
 
-    // ---- UC1-GET-ALL ----
+    // ---- UC2-GET-ALL ----
     @GetMapping
     public List<EmployeePayrollModel> getAllEmployees() {
         log.info("Fetching all employees");
@@ -38,16 +40,16 @@ public class EmployeePayrollController {
         return employeePayrollService.getEmployeeById(id);
     }
 
-    // ---- UC3-PUT ----
+    // ---- UC4-PUT ----
     @PutMapping("/{id}")
     public EmployeePayrollModel updateEmployee(
             @PathVariable int id,
-            @RequestBody EmployeePayrollDTO employeeDTO) {
+            @Valid @RequestBody EmployeePayrollDTO employeeDTO) {
         log.info("Updating employee with id: {}", id);
         return employeePayrollService.updateEmployee(id, employeeDTO);
     }
 
-    // ---- UC3-DELETE ----
+    // ---- UC5-DELETE ----
     @DeleteMapping("/{id}")
     public String deleteEmployee(@PathVariable int id) {
         log.info("Deleting employee with id: {}", id);
