@@ -1,6 +1,7 @@
 package com.bridgelabz.employeepayrollapp.service;
 
 import com.bridgelabz.employeepayrollapp.dto.EmployeePayrollDTO;
+import com.bridgelabz.employeepayrollapp.exception.EmployeeNotFoundException;
 import com.bridgelabz.employeepayrollapp.model.EmployeePayrollModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,30 +41,27 @@ public class EmployeePayrollService {
         return employeeList.stream()
                 .filter(emp -> emp.getId() == id)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> {
+                    log.error("Service: Employee with id {} not found", id);
+                    return new EmployeeNotFoundException(
+                            "Employee with id " + id + " not found");
+                });
     }
 
     public EmployeePayrollModel updateEmployee(int id, EmployeePayrollDTO employeeDTO) {
         log.debug("Service: Updating employee with id {}", id);
         EmployeePayrollModel employee = getEmployeeById(id);
-        if (employee != null) {
-            employee.setName(employeeDTO.getName());
-            employee.setSalary(employeeDTO.getSalary());
-            log.debug("Service: Employee updated successfully {}", employee);
-        } else {
-            log.warn("Service: Employee with id {} not found for update", id);
-        }
+        employee.setName(employeeDTO.getName());
+        employee.setSalary(employeeDTO.getSalary());
+        log.debug("Service: Employee updated successfully {}", employee);
         return employee;
     }
 
     public boolean deleteEmployee(int id) {
         log.debug("Service: Deleting employee with id {}", id);
-        boolean removed = employeeList.removeIf(emp -> emp.getId() == id);
-        if (removed) {
-            log.debug("Service: Employee with id {} deleted successfully", id);
-        } else {
-            log.warn("Service: Employee with id {} not found for deletion", id);
-        }
-        return removed;
+        EmployeePayrollModel employee = getEmployeeById(id);
+        employeeList.remove(employee);
+        log.debug("Service: Employee with id {} deleted successfully", id);
+        return true;
     }
 }
