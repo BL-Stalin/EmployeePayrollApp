@@ -53,9 +53,7 @@ public class EmployeePayrollController {
     @DeleteMapping("/{id}")
     public String deleteEmployee(@PathVariable int id) {
         log.info("Deleting employee with id: {}", id);
-        boolean deleted = employeePayrollService.deleteEmployee(id);
-        return deleted
-                ? "Employee deleted successfully"
-                : "Employee not found";
+        employeePayrollService.deleteEmployee(id);
+        return "Employee deleted successfully";
     }
 }
