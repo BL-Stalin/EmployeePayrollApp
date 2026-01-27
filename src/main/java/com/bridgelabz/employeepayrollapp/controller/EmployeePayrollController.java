@@ -56,4 +56,12 @@ public class EmployeePayrollController {
         employeePayrollService.deleteEmployee(id);
         return "Employee deleted successfully";
     }
+
+    // ---- UC6-GET-BY-DEPARTMENT ----
+    @GetMapping("/department/{department}")
+    public List<EmployeePayrollModel> getEmployeesByDepartment(
+            @PathVariable String department) {
+        log.info("Fetching employees from department: {}", department);
+        return employeePayrollService.getEmployeesByDepartment(department);
+    }
 }

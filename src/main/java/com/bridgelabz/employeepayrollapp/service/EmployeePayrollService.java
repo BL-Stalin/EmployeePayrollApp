@@ -80,4 +80,12 @@ public class EmployeePayrollService {
         employeePayrollRepository.delete(employee);
         log.debug("Service: Employee with id {} deleted successfully", id);
     }
+
+    // ==========================
+    // UC6: Get Employees by Department
+    // ==========================
+    public List<EmployeePayrollModel> getEmployeesByDepartment(String department) {
+        log.debug("Service: Fetching employees from department {}", department);
+        return employeePayrollRepository.findEmployeesByDepartment(department);
+    }
 }
