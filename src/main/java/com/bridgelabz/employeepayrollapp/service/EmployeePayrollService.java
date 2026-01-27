@@ -3,44 +3,47 @@ package com.bridgelabz.employeepayrollapp.service;
 import com.bridgelabz.employeepayrollapp.dto.EmployeePayrollDTO;
 import com.bridgelabz.employeepayrollapp.exception.EmployeeNotFoundException;
 import com.bridgelabz.employeepayrollapp.model.EmployeePayrollModel;
+import com.bridgelabz.employeepayrollapp.repository.EmployeePayrollRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Service
 public class EmployeePayrollService {
 
-    private List<EmployeePayrollModel> employeeList = new ArrayList<>();
-    private int empIdCounter = 1;
+    private final EmployeePayrollRepository employeePayrollRepository;
+
+    public EmployeePayrollService(EmployeePayrollRepository employeePayrollRepository) {
+        this.employeePayrollRepository = employeePayrollRepository;
+    }
 
     // ==========================
-    // USE CASE 1: Add Employee & Get All Employees
+    // UC4: Add Employee (DB)
     // ==========================
     public EmployeePayrollModel addEmployee(EmployeePayrollDTO employeeDTO) {
-        log.debug("Service: Adding employee {}", employeeDTO);
-        EmployeePayrollModel employee =
-                new EmployeePayrollModel(empIdCounter++, employeeDTO.getName(), employeeDTO.getSalary());
-        employeeList.add(employee);
-        log.debug("Service: Employee added successfully {}", employee);
-        return employee;
-    }
-
-    public List<EmployeePayrollModel> getAllEmployees() {
-        log.debug("Service: Fetching all employees");
-        return employeeList;
+        log.debug("Service: Saving employee to DB {}", employeeDTO);
+        EmployeePayrollModel employee = new EmployeePayrollModel(employeeDTO);
+        EmployeePayrollModel savedEmployee = employeePayrollRepository.save(employee);
+        log.debug("Service: Employee saved successfully {}", savedEmployee);
+        return savedEmployee;
     }
 
     // ==========================
-    // USE CASE 3: Get, Update & Delete Employee by ID
+    // UC4: Get All Employees (DB)
+    // ==========================
+    public List<EmployeePayrollModel> getAllEmployees() {
+        log.debug("Service: Fetching all employees from DB");
+        return employeePayrollRepository.findAll();
+    }
+
+    // ==========================
+    // UC4: Get Employee by ID (DB)
     // ==========================
     public EmployeePayrollModel getEmployeeById(int id) {
         log.debug("Service: Fetching employee with id {}", id);
-        return employeeList.stream()
-                .filter(emp -> emp.getId() == id)
-                .findFirst()
+        return employeePayrollRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Service: Employee with id {} not found", id);
                     return new EmployeeNotFoundException(
@@ -48,20 +51,33 @@ public class EmployeePayrollService {
                 });
     }
 
+    // ==========================
+    // UC4: Update Employee (DB)
+    // ==========================
     public EmployeePayrollModel updateEmployee(int id, EmployeePayrollDTO employeeDTO) {
         log.debug("Service: Updating employee with id {}", id);
         EmployeePayrollModel employee = getEmployeeById(id);
+
         employee.setName(employeeDTO.getName());
         employee.setSalary(employeeDTO.getSalary());
-        log.debug("Service: Employee updated successfully {}", employee);
-        return employee;
+        employee.setGender(employeeDTO.getGender());
+        employee.setStartDate(employeeDTO.getStartDate());
+        employee.setNote(employeeDTO.getNote());
+        employee.setProfilePic(employeeDTO.getProfilePic());
+        employee.setDepartment(employeeDTO.getDepartment());
+
+        EmployeePayrollModel updatedEmployee = employeePayrollRepository.save(employee);
+        log.debug("Service: Employee updated successfully {}", updatedEmployee);
+        return updatedEmployee;
     }
 
-    public boolean deleteEmployee(int id) {
+    // ==========================
+    // UC4: Delete Employee (DB)
+    // ==========================
+    public void deleteEmployee(int id) {
         log.debug("Service: Deleting employee with id {}", id);
         EmployeePayrollModel employee = getEmployeeById(id);
-        employeeList.remove(employee);
+        employeePayrollRepository.delete(employee);
         log.debug("Service: Employee with id {} deleted successfully", id);
-        return true;
     }
 }
